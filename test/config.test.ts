@@ -3,10 +3,7 @@ import { loadConfig } from '../src/config.js';
 
 describe('loadConfig', () => {
   it('applies defaults', () => {
-    const c = loadConfig({
-      DISCORD_TOKEN: 'abc',
-      GSI_AUTH_TOKEN: 'longenough',
-    });
+    const c = loadConfig({ GSI_AUTH_TOKEN: 'longenough' });
     expect(c.GSI_PORT).toBe(3000);
   });
 
