@@ -1,6 +1,7 @@
 ---
 name: reviewer
 description: Read-only reviewer for AI-authored diffs. Use before opening or merging a PR.
+model: haiku
 tools: Read, Grep, Glob, Bash
 ---
 Review the current branch diff against `main` (`git diff main...HEAD`). Do not edit files.
