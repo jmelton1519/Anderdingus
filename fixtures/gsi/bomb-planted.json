@@ -1,0 +1,65 @@
+{
+  "provider": {
+    "name": "Counter-Strike 2",
+    "appid": 730,
+    "version": 14000,
+    "steamid": "76561198000000001",
+    "timestamp": 1731500000
+  },
+  "auth": {
+    "token": "test-token"
+  },
+  "map": {
+    "mode": "competitive",
+    "name": "de_mirage",
+    "phase": "live",
+    "round": 7,
+    "team_ct": {
+      "score": 4,
+      "consecutive_round_losses": 0,
+      "timeouts_remaining": 1
+    },
+    "team_t": {
+      "score": 3,
+      "consecutive_round_losses": 2,
+      "timeouts_remaining": 1
+    }
+  },
+  "round": {
+    "phase": "live",
+    "bomb": "planted"
+  },
+  "player": {
+    "steamid": "76561198000000001",
+    "name": "Tester",
+    "team": "T",
+    "activity": "playing",
+    "state": {
+      "health": 100,
+      "armor": 100,
+      "helmet": true,
+      "money": 1200,
+      "equip_value": 3700,
+      "round_kills": 0
+    },
+    "weapons": {
+      "weapon_0": {
+        "name": "weapon_knife",
+        "type": "Knife",
+        "state": "holstered"
+      },
+      "weapon_1": {
+        "name": "weapon_ak47",
+        "type": "Rifle",
+        "state": "active"
+      }
+    },
+    "match_stats": {
+      "kills": 5,
+      "assists": 1,
+      "deaths": 3,
+      "mvps": 1,
+      "score": 12
+    }
+  }
+}
