@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Anderdingus v0.1 design</title>
+    <style>
+      :root {
+        --bg: #fff;
+        --fg: #1b1f24;
+        --muted: #59636e;
+        --card: #f6f8fa;
+        --line: #d0d7de;
+        --accent: #0969da;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0d1117;
+          --fg: #e6edf3;
+          --muted: #9198a1;
+          --card: #161b22;
+          --line: #30363d;
+          --accent: #4493f8;
+        }
+      }
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font:
+          16px/1.55 system-ui,
+          sans-serif;
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 24px 16px 64px;
+      }
+      h1 {
+        margin-bottom: 4px;
+      }
+      h2 {
+        margin-top: 36px;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 6px;
+      }
+      .sub {
+        color: var(--muted);
+        margin-top: 0;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin: 12px 0;
+      }
+      .flow {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin: 16px 0;
+      }
+      .node {
+        background: var(--card);
+        border: 1px solid var(--accent);
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 14px;
+      }
+      .arrow {
+        color: var(--muted);
+      }
+      .branch {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 8px;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        background: var(--card);
+      }
+      code {
+        background: var(--card);
+        padding: 1px 5px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Anderdingus v0.1 design</h1>
+    <p class="sub">
+      Browser version of <code>docs/design.md</code>. Keep the two in sync.
+    </p>
+
+    <h2>Goal</h2>
+    <p>
+      A Discord bot that answers CS2 players' questions about live game state
+      ("who has the bomb?", "team economy?") from official Game State
+      Integration (GSI) data. It only reads data; it never sends input to the
+      game.
+    </p>
+
+    <h2>Alpha 0.1: what "done" looks like</h2>
+    <div class="card">
+      One player runs CS2 with a GSI config. In a Discord server they type
+      <code>/bomb</code>, <code>/economy</code> or <code>/round</code> and the
+      bot replies with the right answer from live data. Plain code, no model,
+      all on the owner's PC. A short demo recording is the exit test.
+    </div>
+    <p>
+      <b>Not in alpha 0.1:</b> multiple players, voice, natural language, any
+      model, callouts, minimap.
+    </p>
+
+    <h3>Wireframe (low fidelity)</h3>
+    <pre
+      class="card"
+      style="overflow-x: auto; font-size: 13px; line-height: 1.35"
+    >
++----+-------------+--------------------------------------------+
+| () | text        | # cs2-callouts                             |
+| () | # cs2-calls |--------------------------------------------|
+| () | # general   | (o) you                                    |
+|    |             |     /bomb                                  |
+|    | voice       | [B] anderdingus BOT                        |
+|    |  Squad      |     +------------------------------+       |
+|    |             |     | You are carrying the bomb.   |       |
+|    |             |     +------------------------------+       |
+|    |             | (o) you                                    |
+|    |             |     /economy                               |
+|    |             | [B] anderdingus BOT                        |
+|    |             |     +------------------------------+       |
+|    |             |     | Money $1200, equipment       |       |
+|    |             |     | value $3700.                 |       |
+|    |             |     +------------------------------+       |
+|    |             | (o) you                                    |
+|    |             |     /round                                 |
+|    |             | [B] anderdingus BOT                        |
+|    |             |     +------------------------------+       |
+|    |             |     | de_mirage, round 7 (live).   |       |
+|    |             |     | CT 4 - T 3.                  |       |
+|    |             |     +------------------------------+       |
+|    |             | [ Message # cs2-callouts ]                 |
++----+-------------+--------------------------------------------+</pre>
+
+    <h2>Architecture</h2>
+    <div class="flow">
+      <span class="node">CS2 game</span><span class="arrow">GSI POST →</span>
+      <span class="node">Receiver<br /><small>auth + validate</small></span
+      ><span class="arrow">→</span> <span class="node">State store</span
+      ><span class="arrow">→</span> <span class="node">Query functions</span
+      ><span class="arrow">→</span> <span class="node">Responders</span
+      ><span class="arrow">→</span>
+      <span class="branch"
+        ><span class="node">Discord bot</span
+        ><span class="node">Manual CLI</span></span
+      >
+    </div>
+    <ul>
+      <li>
+        <b>Event source (receiver):</b> the only part that knows GSI. A vision
+        source can join it later.
+      </li>
+      <li>
+        <b>State store:</b> latest payload plus short history, timestamped.
+      </li>
+      <li>
+        <b>Queries:</b> pure functions over state; easy to test with fixtures;
+        reused by every responder.
+      </li>
+      <li>
+        <b>Responders:</b> Discord and the CLI call the same queries. A model,
+        if any, sits here later and only rephrases or routes.
+      </li>
+      <li>
+        <b>Game adapter:</b> boundary between a game's raw data and normalized
+        state, so other games can plug in.
+      </li>
+    </ul>
+
+    <h2>Testing</h2>
+    <p>
+      Fixtures replay through the real receiver, so the game is not needed for
+      tests. The game is needed twice: to record real payloads and verify the
+      schema, and for the alpha demo.
+    </p>
+
+    <h2>Sprints</h2>
+    <table>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>What</th>
+        <th>Exit</th>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>Pipeline proven</td>
+        <td>
+          Merge first slice. Record real payloads, replace hand-written
+          fixtures, fix schema.
+        </td>
+        <td>
+          Manual <code>replay</code> and <code>ask</code> work on a real
+          recording.
+        </td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Alpha 0.1</td>
+        <td>
+          Discord bot, three slash commands, one player, local. Needs a Discord
+          bot token.
+        </td>
+        <td>Demo recording.</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Team state</td>
+        <td>
+          Companion app sends each friend's GSI to the bot with player identity;
+          merge into team state.
+        </td>
+        <td>Team economy and bomb across the team.</td>
+      </tr>
+      <tr>
+        <td>4+</td>
+        <td>Later</td>
+        <td>
+          Model decision and natural language, callouts, voice, minimap spike.
+        </td>
+        <td>Decided per item.</td>
+      </tr>
+    </table>
+
+    <h2>Open questions</h2>
+    <ul>
+      <li>
+        <b>Model:</b> rules only, local model, or paid API. Parked until GPU is
+        known.
+      </li>
+      <li>
+        <b>Networking for sprint 3:</b> bot runs on the owner's PC, so friends
+        need a safe route to it (private network tool or tunnel).
+      </li>
+      <li>
+        <b>GSI limits:</b> each player reports only their own state, so team
+        features need every friend running the companion.
+      </li>
+    </ul>
+
+    <h2>Integrity</h2>
+    <p>
+      Only data a player could legitimately see or that teammates share. No
+      automated input. Public or tournament use needs a per-game, per-platform
+      rules check first.
+    </p>
+  </body>
+</html>
