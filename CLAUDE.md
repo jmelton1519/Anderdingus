@@ -56,3 +56,12 @@ A Discord bot (an AI agent) that reduces players' cognitive load and gives them 
 - Tests for every behavior; use recorded GSI payloads as fixtures.
 - Secrets only in environment variables.
 - Harness (`.claude/`): `/spec`, `/adr`, `/pr` commands; `reviewer` subagent (read-only, run before merging); `settings.json` allows read-only git/gh and quality-gate commands and denies `.env` access, force-push, hard reset and `rm -rf`. Quality gates: `npm run check` (lint, format check, type check, tests); husky pre-commit runs lint-staged; CI runs the same on every PR. PR review policy: ADR 0002.
+
+## Context and usage discipline
+
+- One task per session; start fresh sessions rather than letting context grow.
+- Read files in ranges. Never read `package-lock.json`, `node_modules`, `dist` or `coverage` (denied in settings).
+- Delegate wide searches and reviews to subagents; keep their output to conclusions, not file dumps.
+- Use the cheapest model that works (Haiku for review and routine tasks, Sonnet for design). The bot's runtime model rules are in decision 7.
+- Do not paste large logs or payloads into chat: summarize, or save to a file and reference it.
+- Doctrine lives in `docs/doctrine/`; load only the page a task needs.

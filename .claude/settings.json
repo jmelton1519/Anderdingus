@@ -16,6 +16,10 @@
     ],
     "deny": [
       "Read(./.env)",
+      "Read(./node_modules/**)",
+      "Read(./dist/**)",
+      "Read(./coverage/**)",
+      "Read(./package-lock.json)",
       "Read(./.env.*)",
       "Edit(./.env)",
       "Edit(./.env.*)",
