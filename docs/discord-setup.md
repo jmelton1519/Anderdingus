@@ -11,3 +11,5 @@ You do these steps in the Discord web UI. Never paste the bot token into chat, a
 7. In your server, type `/bomb`, `/economy` or `/round`.
 
 If you ever leak the token, reset it on the Bot page.
+
+To relay CS2 console output to a channel, see `console-relay.md`.

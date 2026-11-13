@@ -10,6 +10,22 @@ const schema = z
     GSI_AUTH_TOKEN: z.string().min(8),
     // If set, save one raw payload per distinct game state here (for building fixtures).
     GSI_RECORD_DIR: z.string().min(1).optional(),
+    // Console relay: path to CS2's console.log (launch CS2 with -condebug) and the channel to post to.
+    CS2_CONSOLE_LOG: z.string().min(1).optional(),
+    DISCORD_CONSOLE_CHANNEL_ID: z.string().regex(/^\d+$/).optional(),
+    // Optional regex; only matching console lines are relayed.
+    CONSOLE_FILTER: z
+      .string()
+      .min(1)
+      .refine((v) => {
+        try {
+          new RegExp(v);
+          return true;
+        } catch {
+          return false;
+        }
+      })
+      .optional(),
     LOG_LEVEL: z
       .enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal'])
       .default('info'),
@@ -27,6 +43,19 @@ const schema = z
             code: 'custom',
             path: [k],
             message: 'required with other DISCORD_* values',
+          });
+        }
+      }
+    }
+    // The console relay needs both its values and a working Discord bot.
+    const relay = ['CS2_CONSOLE_LOG', 'DISCORD_CONSOLE_CHANNEL_ID'] as const;
+    if (relay.some((k) => c[k] !== undefined)) {
+      for (const k of [...relay, ...keys]) {
+        if (c[k] === undefined) {
+          ctx.addIssue({
+            code: 'custom',
+            path: [k],
+            message: 'required for the console relay',
           });
         }
       }

@@ -1,4 +1,6 @@
+import { Events } from 'discord.js';
 import { loadConfig } from './config.js';
+import { startConsoleRelay } from './console/index.js';
 import { startBot } from './discord/bot.js';
 import { createRecorder } from './gsi/recorder.js';
 import { createGsiServer } from './gsi/server.js';
@@ -23,13 +25,33 @@ if (
   config.DISCORD_CLIENT_ID &&
   config.DISCORD_GUILD_ID
 ) {
-  await startBot({
+  const client = await startBot({
     token: config.DISCORD_TOKEN,
     clientId: config.DISCORD_CLIENT_ID,
     guildId: config.DISCORD_GUILD_ID,
     store,
     logger,
   });
+  if (config.CS2_CONSOLE_LOG && config.DISCORD_CONSOLE_CHANNEL_ID) {
+    const logPath = config.CS2_CONSOLE_LOG;
+    const channelId = config.DISCORD_CONSOLE_CHANNEL_ID;
+    const filter = config.CONSOLE_FILTER
+      ? new RegExp(config.CONSOLE_FILTER)
+      : undefined;
+    // Channels can only be fetched once the client is ready.
+    const start = () =>
+      startConsoleRelay({
+        client,
+        channelId,
+        logPath,
+        logger,
+        ...(filter ? { filter } : {}),
+      }).catch((err: unknown) =>
+        logger.error({ err }, 'console relay failed to start'),
+      );
+    if (client.isReady()) void start();
+    else client.once(Events.ClientReady, () => void start());
+  }
 } else {
   logger.info('Discord not configured; running receiver only');
 }
