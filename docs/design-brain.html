@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Anderdingus decision engine</title>
+    <style>
+      :root {
+        --bg: #fff;
+        --fg: #1b1f24;
+        --muted: #59636e;
+        --card: #f6f8fa;
+        --line: #d0d7de;
+        --accent: #0969da;
+        --warn: #9a6700;
+        --ok: #1a7f37;
+        --no: #cf222e;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0d1117;
+          --fg: #e6edf3;
+          --muted: #9198a1;
+          --card: #161b22;
+          --line: #30363d;
+          --accent: #4493f8;
+          --warn: #d29922;
+          --ok: #3fb950;
+          --no: #f85149;
+        }
+      }
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font:
+          16px/1.55 system-ui,
+          sans-serif;
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 24px 16px 64px;
+      }
+      h1 {
+        margin-bottom: 4px;
+      }
+      h2 {
+        margin-top: 36px;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 6px;
+      }
+      .sub {
+        color: var(--muted);
+        margin-top: 0;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin: 12px 0;
+      }
+      .note {
+        border-left: 3px solid var(--warn);
+        padding: 8px 12px;
+        background: var(--card);
+        margin: 12px 0;
+      }
+      .flow {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+        margin: 14px 0;
+      }
+      .node {
+        background: var(--card);
+        border: 1px solid var(--accent);
+        border-radius: 6px;
+        padding: 6px 10px;
+        font-size: 14px;
+        text-align: center;
+      }
+      .node small {
+        color: var(--muted);
+      }
+      .arrow {
+        color: var(--muted);
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 8px;
+        text-align: left;
+        vertical-align: top;
+        font-size: 15px;
+      }
+      th {
+        background: var(--card);
+      }
+      .ok {
+        color: var(--ok);
+        font-weight: 500;
+      }
+      .no {
+        color: var(--no);
+        font-weight: 500;
+      }
+      .maybe {
+        color: var(--warn);
+        font-weight: 500;
+      }
+      code,
+      pre {
+        background: var(--card);
+        border-radius: 4px;
+      }
+      code {
+        padding: 1px 5px;
+      }
+      pre {
+        padding: 12px;
+        overflow-x: auto;
+        font-size: 13px;
+        line-height: 1.4;
+        border: 1px solid var(--line);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Anderdingus decision engine</h1>
+    <p class="sub">
+      Draft v2 for review, 2026-11-13. Not pushed. Rewritten after your
+      explanation: a catalog of in-game situations, standard decision-tree
+      inputs and outputs, and a model that only chooses.
+    </p>
+
+    <h2>What you described</h2>
+    <div class="card">
+      A <b>database of situations</b> that happen in a round (enemy in front,
+      teammate died, red radar blip). Each situation has
+      <b>standard inputs</b> and a fixed set of <b>possible outputs</b>. A
+      <b>decision model</b> picks one output; it never writes free-form text.
+      Example:
+      <i
+        >I'm on B, a teammate dies mid, I get told where they died and other
+        relevant positions.</i
+      >
+    </div>
+
+    <h2>The pipeline</h2>
+    <div class="flow">
+      <span class="node"
+        >Sources<br /><small>GSI, console, teammates</small></span
+      ><span class="arrow">→</span>
+      <span class="node"
+        >Situation detector<br /><small>catalog entries</small></span
+      ><span class="arrow">→</span>
+      <span class="node">Decision<br /><small>tree, later model</small></span
+      ><span class="arrow">→</span>
+      <span class="node">Output template<br /><small>fixed wording</small></span
+      ><span class="arrow">→</span>
+      <span class="node">Discord</span>
+    </div>
+    <ul>
+      <li>
+        <b>Situation catalog:</b> each entry names the situation, its inputs
+        (fields with types), the data source, and when it fires.
+      </li>
+      <li>
+        <b>Decision catalog:</b> each situation lists its allowed outputs
+        (callout IDs with templates). Nothing outside the list can be said.
+      </li>
+      <li>
+        <b>Decider:</b> one interface,
+        <code>decide(situation, inputs) → output ID</code>. Version 1 is a
+        hand-written decision tree. Later a small model implements the same
+        interface and is checked against the tree on recorded games.
+      </li>
+      <li>
+        <b>Decision log:</b> every situation, its inputs and the chosen output
+        is saved (sanitized). That becomes training and test data for the model.
+      </li>
+    </ul>
+
+    <h2>Your example, and whether our data allows it</h2>
+    <table>
+      <tr>
+        <th>Situation</th>
+        <th>Inputs needed</th>
+        <th>Source today</th>
+        <th>Status</th>
+      </tr>
+      <tr>
+        <td>Teammate died</td>
+        <td>Who, where (map zone), my zone, time left</td>
+        <td>
+          Each teammate's own GSI health and position, shared through the
+          companion app
+        </td>
+        <td class="maybe">
+          Possible after team sprint; position needs verifying (below)
+        </td>
+      </tr>
+      <tr>
+        <td>Enemy in front</td>
+        <td>Enemy position relative to me</td>
+        <td>Not in GSI for normal players</td>
+        <td class="no">Needs the vision spike</td>
+      </tr>
+      <tr>
+        <td>Red radar blip</td>
+        <td>Spotted enemy positions</td>
+        <td>Not in GSI for normal players (radar is on screen only)</td>
+        <td class="no">Needs the vision spike</td>
+      </tr>
+      <tr>
+        <td>Bomb planted / defused</td>
+        <td>Site, time</td>
+        <td>GSI round.bomb</td>
+        <td class="ok">Available now (site needs zones)</td>
+      </tr>
+      <tr>
+        <td>I'm low HP / flashed</td>
+        <td>Health, flashed amount</td>
+        <td>GSI player.state</td>
+        <td class="ok">Available now</td>
+      </tr>
+      <tr>
+        <td>Kill or damage feed</td>
+        <td>Attacker, victim, damage</td>
+        <td>Console relay</td>
+        <td class="maybe">Unverified: today's console had no kill lines</td>
+      </tr>
+    </table>
+    <div class="note">
+      "Enemy in front" and "red radar blip" can't come from official data for a
+      normal player. They would need on-screen reading (the deferred vision
+      spike) and a rules check, because live enemy info is the riskiest kind of
+      assistance.
+    </div>
+
+    <h2>Two pieces we must build</h2>
+    <ol>
+      <li>
+        <b>Map zones.</b> GSI gives coordinates, not names like "Mid" or "B
+        site". CS2 already has place names (it shows your current place on the
+        HUD radar), so we should reuse the game's own names rather than invent
+        them. Options, best first, each to verify:
+        <ul>
+          <li>
+            Extract place areas from the map's navigation data in the game
+            files, giving coordinates → place name for free.
+          </li>
+          <li>
+            Read place tags from the console (team chat lines may carry the
+            sender's place).
+          </li>
+          <li>
+            Fallback: hand-made zone polygons per map, using the game's place
+            names.
+          </li>
+        </ul>
+        Reading the on-screen name directly would be vision work, so it waits
+        for that spike. Start with Inferno.
+      </li>
+      <li>
+        <b>Own position check.</b> GSI has a
+        <code>player_position</code> section we don't request yet. Add it to the
+        cfg, record a round, and confirm it reports position while you play, not
+        just while spectating. The whole "where did my teammate die" idea
+        depends on this.
+      </li>
+    </ol>
+
+    <h2>What one catalog entry looks like</h2>
+    <pre>
+situation: teammate_died
+inputs:
+  victim: player_id
+  victim_zone: zone      # from victim's position + map zones
+  my_zone: zone
+  alive_teammates: int
+  round_time_left: seconds
+outputs:
+  - id: died_near_you     say: "{victim} died {victim_zone}, close to you"
+  - id: died_far          say: "{victim} died {victim_zone}"
+  - id: last_alive        say: "{victim} died {victim_zone}. You're last alive"
+decider v1 (tree):
+  alive_teammates == 0          → last_alive
+  victim_zone adjacent my_zone  → died_near_you
+  else                          → died_far</pre>
+
+    <h2>The decision model</h2>
+    <ul>
+      <li>
+        Treated as a <b>classifier</b>: given the inputs, choose one output ID.
+        Small, fast and checkable.
+      </li>
+      <li>
+        Candidates: a small local language model forced to answer with one
+        listed ID, or a tiny trained classifier (for example a decision forest)
+        built from the decision log. The second may beat a language model here
+        and needs no GPU.
+      </li>
+      <li>
+        Any answer that isn't a listed ID is dropped and the tree's answer is
+        used.
+      </li>
+      <li>
+        You mentioned a model "like Jev". I don't know what Jev is; point me at
+        it and I'll compare.
+      </li>
+    </ul>
+
+    <h2>How the decision database gets built</h2>
+    <div class="card">
+      Claude Code does <b>not</b> write catalog entries itself. It acts as the
+      <b>orchestrator</b>: it owns the format, the checks and the merge, and it
+      hands the authoring to subagents.
+    </div>
+    <table>
+      <tr>
+        <th>Role</th>
+        <th>Does</th>
+        <th>Doesn't</th>
+      </tr>
+      <tr>
+        <td>Orchestrator (Claude Code)</td>
+        <td>
+          Writes the catalog schema, validator and tests. Splits the work into
+          slices. Briefs agents, validates what comes back, resolves conflicts,
+          opens PRs.
+        </td>
+        <td>Author situation or decision entries.</td>
+      </tr>
+      <tr>
+        <td>Author agents</td>
+        <td>
+          Each writes entries for one slice (for example: bomb situations,
+          own-state situations, teammate situations, Inferno zones). Output must
+          pass the validator.
+        </td>
+        <td>
+          Change the schema, invent data sources, or add enemy-position
+          situations.
+        </td>
+      </tr>
+      <tr>
+        <td>Reviewer agent</td>
+        <td>
+          Checks each slice against the integrity rules, the data-availability
+          table and duplicate or conflicting entries.
+        </td>
+        <td>Edit entries; it reports findings only.</td>
+      </tr>
+      <tr>
+        <td>Owner (you)</td>
+        <td>
+          Approves the schema before agents start, and approves each slice's PR.
+        </td>
+        <td>-</td>
+      </tr>
+    </table>
+    <p>
+      <b>Guardrails:</b> every entry must name a data source marked available;
+      blocked situations are listed as blocked, not authored. At most 4 author
+      agents per batch, on a cheaper model where quality allows. Each slice
+      lands as its own small PR. Agents get the schema and source table, not
+      this whole conversation.
+    </p>
+
+    <h2>Proposed order</h2>
+    <ol>
+      <li>
+        <b>Position check:</b> add <code>player_position</code> to the cfg,
+        record a round, confirm.
+      </li>
+      <li>
+        <b>Schema and engine (orchestrator):</b> catalog schema, validator, tree
+        decider interface, decision log. You approve the schema.
+      </li>
+      <li>
+        <b>First authoring batch (agents):</b> entries that work on your data
+        alone (bomb, own state, round flow), plus Inferno zones. Reviewer agent,
+        then one PR per slice.
+      </li>
+      <li>
+        <b>Team sprint:</b> teammates' companions share state, unlocking
+        "teammate died" with location.
+      </li>
+      <li>
+        <b>Model spike:</b> train or prompt a chooser against the decision log,
+        compare with the tree.
+      </li>
+    </ol>
+
+    <h2>Open questions</h2>
+    <ul>
+      <li>What is "Jev"?</li>
+      <li>
+        Callouts in a text channel for now, or is voice required for this to be
+        useful?
+      </li>
+      <li>
+        OK to keep enemy-position situations out until the vision spike and a
+        rules check?
+      </li>
+    </ul>
+  </body>
+</html>
