@@ -1,4 +1,5 @@
 import { loadConfig } from './config.js';
+import { startBot } from './discord/bot.js';
 import { createRecorder } from './gsi/recorder.js';
 import { createGsiServer } from './gsi/server.js';
 import { createLogger } from './observability/logger.js';
@@ -15,9 +16,27 @@ const config = loadConfig();
 const logger = createLogger({ level: config.LOG_LEVEL });
 installProcessHandlers(logger);
 
+const store = new StateStore();
+
+if (
+  config.DISCORD_TOKEN &&
+  config.DISCORD_CLIENT_ID &&
+  config.DISCORD_GUILD_ID
+) {
+  await startBot({
+    token: config.DISCORD_TOKEN,
+    clientId: config.DISCORD_CLIENT_ID,
+    guildId: config.DISCORD_GUILD_ID,
+    store,
+    logger,
+  });
+} else {
+  logger.info('Discord not configured; running receiver only');
+}
+
 const server = createGsiServer({
   authToken: config.GSI_AUTH_TOKEN,
-  store: new StateStore(),
+  store,
   logger,
   ...(config.GSI_RECORD_DIR
     ? { onRawPayload: createRecorder(config.GSI_RECORD_DIR, logger) }
