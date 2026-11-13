@@ -1,4 +1,5 @@
 import { loadConfig } from './config.js';
+import { createRecorder } from './gsi/recorder.js';
 import { createGsiServer } from './gsi/server.js';
 import { createLogger } from './observability/logger.js';
 import { installProcessHandlers } from './observability/errors.js';
@@ -18,6 +19,9 @@ const server = createGsiServer({
   authToken: config.GSI_AUTH_TOKEN,
   store: new StateStore(),
   logger,
+  ...(config.GSI_RECORD_DIR
+    ? { onRawPayload: createRecorder(config.GSI_RECORD_DIR, logger) }
+    : {}),
 });
 
 // Localhost only: the receiver and the manual query endpoints are not exposed to the network.
