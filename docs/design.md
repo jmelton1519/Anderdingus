@@ -10,6 +10,38 @@ One player runs CS2 with a GSI config. In a Discord server, they type `/bomb`, `
 
 Not in alpha 0.1: multiple players, voice, natural language, any model, callouts, minimap.
 
+### Wireframe (low fidelity)
+
+```text
++----+-------------+--------------------------------------------+
+| () | text        | # cs2-callouts                             |
+| () | # cs2-calls |--------------------------------------------|
+| () | # general   | (o) you                                    |
+|    |             |     /bomb                                  |
+|    | voice       | [B] anderdingus BOT                        |
+|    |  Squad      |     +------------------------------+       |
+|    |             |     | You are carrying the bomb.   |       |
+|    |             |     +------------------------------+       |
+|    |             | (o) you                                    |
+|    |             |     /economy                               |
+|    |             | [B] anderdingus BOT                        |
+|    |             |     +------------------------------+       |
+|    |             |     | Money $1200, equipment       |       |
+|    |             |     | value $3700.                 |       |
+|    |             |     +------------------------------+       |
+|    |             | (o) you                                    |
+|    |             |     /round                                 |
+|    |             | [B] anderdingus BOT                        |
+|    |             |     +------------------------------+       |
+|    |             |     | de_mirage, round 7 (live).   |       |
+|    |             |     | CT 4 - T 3.                  |       |
+|    |             |     +------------------------------+       |
+|    |             | [ Message # cs2-callouts ]                 |
++----+-------------+--------------------------------------------+
+
+CS2 on your PC -> receiver -> state -> bot reply
+```
+
 ## Architecture
 
 ```mermaid
