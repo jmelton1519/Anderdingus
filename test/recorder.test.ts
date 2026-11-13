@@ -21,10 +21,21 @@ describe('recorder', () => {
     record(freeze);
     record(live);
     const files = readdirSync(dir).sort();
-    expect(files).toEqual(['payload-001.json', 'payload-002.json']);
+    expect(files).toHaveLength(2);
+    expect(files[0]).toMatch(/^payload-.+-001\.json$/);
+    expect(files[1]).toMatch(/^payload-.+-002\.json$/);
     const text = readFileSync(join(dir, files[0] ?? ''), 'utf8');
     expect(text).not.toContain('secret-token');
     expect(text).toContain('freezetime');
+  });
+
+  it('does not overwrite files from an earlier run', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'gsi-rec-'));
+    const payload = { ...base, round: { phase: 'live' } };
+    createRecorder(dir, logger)(payload);
+    await new Promise((r) => setTimeout(r, 5));
+    createRecorder(dir, logger)(payload);
+    expect(readdirSync(dir)).toHaveLength(2);
   });
 
   it('stops after the file cap', () => {

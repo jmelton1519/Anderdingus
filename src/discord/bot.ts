@@ -38,7 +38,18 @@ export async function startBot(opts: BotOptions): Promise<Client> {
       });
       return;
     }
-    await interaction.reply(respond(name, store, Date.now()));
+    const now = Date.now();
+    const latest = store.latest();
+    // Command and data age only: no user names or IDs in logs.
+    logger.info(
+      { command: name, dataAgeMs: latest ? now - latest.receivedAt : null },
+      'slash command',
+    );
+    try {
+      await interaction.reply(respond(name, store, now));
+    } catch (err) {
+      logger.error({ err, command: name }, 'slash command reply failed');
+    }
   });
 
   client.on(Events.Error, (err) =>

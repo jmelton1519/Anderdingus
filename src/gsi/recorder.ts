@@ -38,6 +38,8 @@ export function createRecorder(
   maxFiles = 100,
 ): (raw: unknown) => void {
   mkdirSync(dir, { recursive: true });
+  // One prefix per run, so a restart never overwrites an earlier session's files.
+  const session = new Date().toISOString().replace(/[:.]/g, '-');
   const seen = new Set<string>();
   return (raw) => {
     if (typeof raw !== 'object' || raw === null || seen.size >= maxFiles)
@@ -47,8 +49,10 @@ export function createRecorder(
     seen.add(key);
     const clean = { ...(raw as Record<string, unknown>) };
     delete clean['auth'];
-    const name = `payload-${String(seen.size).padStart(3, '0')}.json`;
-    writeFileSync(join(dir, name), JSON.stringify(clean, null, 2) + '\n');
+    const name = `payload-${session}-${String(seen.size).padStart(3, '0')}.json`;
+    writeFileSync(join(dir, name), JSON.stringify(clean, null, 2) + '\n', {
+      flag: 'wx',
+    });
     logger.info({ file: name }, 'recorded new GSI payload shape');
   };
 }
