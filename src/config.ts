@@ -5,6 +5,8 @@ const schema = z.object({
   DISCORD_TOKEN: z.string().min(1).optional(),
   GSI_PORT: z.coerce.number().int().min(1024).max(65535).default(3000),
   GSI_AUTH_TOKEN: z.string().min(8),
+  // If set, save one raw payload per distinct game state here (for building fixtures).
+  GSI_RECORD_DIR: z.string().min(1).optional(),
   LOG_LEVEL: z
     .enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal'])
     .default('info'),

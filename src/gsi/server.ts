@@ -16,6 +16,8 @@ export interface ServerDeps {
   logger: Logger;
   now?: () => number;
   staleAfterMs?: number;
+  /** Called with every authenticated raw payload, before schema validation. */
+  onRawPayload?: (raw: unknown) => void;
 }
 
 const MAX_BODY_BYTES = 1_000_000;
@@ -82,6 +84,8 @@ export function createGsiServer(deps: ServerDeps): Server {
       logger.warn('rejected GSI post: bad auth token');
       return send(res, 401, 'unauthorized');
     }
+
+    deps.onRawPayload?.(raw);
 
     const parsed = parseGsi(raw);
     if (!parsed.ok) {

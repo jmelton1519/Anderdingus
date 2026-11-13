@@ -9,3 +9,6 @@ coverage/
 Thumbs.db
 .idea/
 .vscode/
+
+# Recorded real GSI payloads (contain Steam IDs and names)
+recordings/
