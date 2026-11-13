@@ -18,7 +18,11 @@ export type Config = z.infer<typeof schema>;
 export function loadConfig(
   env: Record<string, string | undefined> = process.env,
 ): Config {
-  const result = schema.safeParse(env);
+  // A blank line like `DISCORD_TOKEN=` in .env means "not set".
+  const cleaned = Object.fromEntries(
+    Object.entries(env).filter(([, v]) => v !== ''),
+  );
+  const result = schema.safeParse(cleaned);
   if (!result.success) {
     const keys = [...new Set(result.error.issues.map((i) => i.path.join('.')))];
     throw new Error(
