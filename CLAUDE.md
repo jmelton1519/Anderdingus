@@ -31,7 +31,7 @@ A Discord bot (an AI agent) that reduces players' cognitive load and gives them 
 - Local clone: `E:\Documents\Dev\repos\Anderdingus`
 - Installed or to install: Git, Node.js LTS, GitHub CLI (`gh`). Verify with `git --version`, `node --version`, `gh auth status`.
 
-## Roadmap (we are here: phase 6)
+## Roadmap (we are here: phase 8)
 
 1. Idea to spec (done: product brief below)
 2. Architecture decisions (mostly done; record each as an ADR in `docs/decisions/`)
