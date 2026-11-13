@@ -2,4 +2,4 @@
 
 Status: accepted
 
-We record each architecture decision as a short ADR in this folder. See CLAUDE.md for the decisions so far; backfill them as ADRs 0002+.
+We record each architecture decision as a short ADR in this folder. CLAUDE.md decisions 1 to 9 are backfilled as ADRs 0004 to 0012.

@@ -23,6 +23,9 @@ A Discord bot (an AI agent) that reduces players' cognitive load and gives them 
 6. **Hosting:** local-first. Everything runs on the owner's Windows PC. Keep config in environment variables so a later move to a cloud host is easy. No cloud accounts yet.
 7. **AI runtime:** Anthropic API via the TypeScript SDK, behind a small interface with a **mock model** for tests and local dev. Default to Haiku 5.5 for routine queries, escalate to Sonnet 5.5 for harder analysis, cache the static system prompt, rate-limit calls, and set a monthly spend cap in the Anthropic Console. The owner's API credits are not available for about 7 days (from 2026-11-13), so build against the mock first. Never commit API keys.
 8. **Rules/integrity:** the bot only uses information a player could legitimately see or that teammates share. No automated aim or input, ever. Live-assist features need a per-game and per-platform rules check (Valve, FACEIT/ESL, etc.) before public or tournament use. Design separate modes: live team comms, practice, post-match review.
+9. **CS2 console relay:** tail CS2's `console.log` (launch option `-condebug`) and post new lines to a configured Discord channel, with an optional regex filter. Read-only; `-netconport` was rejected because it accepts commands. See ADR 0012 and `docs/console-relay.md`.
+
+Decisions 1 to 9 are recorded as ADRs 0004 to 0012 in `docs/decisions/`.
 
 ## Environment
 
@@ -34,7 +37,7 @@ A Discord bot (an AI agent) that reduces players' cognitive load and gives them 
 ## Roadmap (we are here: phase 8)
 
 1. Idea to spec (done: product brief below)
-2. Architecture decisions (mostly done; record each as an ADR in `docs/decisions/`)
+2. Architecture decisions (done; ADRs in `docs/decisions/`)
 3. **Repo and GitHub setup:** README, .gitignore, .editorconfig, branch strategy, branch protection, issue/PR templates, labels, project board
 4. The AI harness: this file, `.claude/commands/`, subagents, hooks, permissions
 5. Quality gates and CI: lint, format, type check, tests, pre-commit hooks, GitHub Actions; define how AI-authored PRs get reviewed
