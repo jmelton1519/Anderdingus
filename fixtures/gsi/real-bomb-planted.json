@@ -1,0 +1,89 @@
+{
+  "provider": {
+    "name": "Counter-Strike: Global Offensive",
+    "appid": 730,
+    "version": 14197,
+    "steamid": "76561198000000001",
+    "timestamp": 1794605009
+  },
+  "map": {
+    "mode": "casual",
+    "name": "de_inferno",
+    "phase": "live",
+    "round": 1,
+    "team_ct": {
+      "score": 0,
+      "consecutive_round_losses": 1,
+      "timeouts_remaining": 1,
+      "matches_won_this_series": 0
+    },
+    "team_t": {
+      "score": 1,
+      "consecutive_round_losses": 0,
+      "timeouts_remaining": 1,
+      "matches_won_this_series": 0
+    },
+    "num_matches_to_win_series": 0
+  },
+  "round": {
+    "phase": "live",
+    "bomb": "planted"
+  },
+  "player": {
+    "steamid": "835",
+    "name": "Tester",
+    "observer_slot": 9,
+    "team": "T",
+    "activity": "playing",
+    "state": {
+      "health": 61,
+      "armor": 100,
+      "helmet": true,
+      "flashed": 0,
+      "smoked": 0,
+      "burning": 0,
+      "money": 1350,
+      "round_kills": 2,
+      "round_killhs": 0,
+      "equip_value": 4200
+    },
+    "weapons": {
+      "weapon_0": {
+        "name": "weapon_knife_t",
+        "paintkit": "default",
+        "type": "Knife",
+        "state": "holstered"
+      },
+      "weapon_1": {
+        "name": "weapon_glock",
+        "paintkit": "default",
+        "type": "Pistol",
+        "ammo_clip": 20,
+        "ammo_clip_max": 20,
+        "ammo_reserve": 3,
+        "state": "holstered"
+      },
+      "weapon_2": {
+        "name": "weapon_sg556",
+        "paintkit": "default",
+        "type": "Rifle",
+        "ammo_clip": 21,
+        "ammo_clip_max": 30,
+        "ammo_reserve": 2,
+        "state": "active"
+      }
+    },
+    "match_stats": {
+      "kills": 3,
+      "assists": 0,
+      "deaths": 0,
+      "mvps": 0,
+      "score": 9
+    }
+  },
+  "added": {
+    "round": {
+      "bomb": true
+    }
+  }
+}

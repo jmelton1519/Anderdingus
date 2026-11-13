@@ -27,6 +27,20 @@ describe('recorded CS2 payloads (sanitized)', () => {
     }
   });
 
+  it('reports planted and defused bombs from real payloads', () => {
+    const answerFor = (f: string): string => {
+      const parsed = parseGsi(load(f));
+      if (!parsed.ok) throw new Error(`${f} did not parse`);
+      return answer('bomb', {
+        snapshot: { payload: parsed.payload, receivedAt: 0 },
+        now: 0,
+        staleAfterMs: 10_000,
+      });
+    };
+    expect(answerFor('real-bomb-planted.json')).toBe('The bomb is planted.');
+    expect(answerFor('real-bomb-defused.json')).toBe('The bomb was defused.');
+  });
+
   it('detects the bomb in the real C4 payload', () => {
     const parsed = parseGsi(load('real-freezetime-c4.json'));
     expect(parsed.ok && hasBomb(parsed.payload)).toBe(true);
