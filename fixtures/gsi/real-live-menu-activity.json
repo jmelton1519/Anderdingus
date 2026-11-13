@@ -1,0 +1,63 @@
+{
+  "provider": {
+    "name": "Counter-Strike: Global Offensive",
+    "appid": 730,
+    "version": 14197,
+    "steamid": "76561198000000001",
+    "timestamp": 1794604906
+  },
+  "map": {
+    "mode": "casual",
+    "name": "de_inferno",
+    "phase": "live",
+    "round": 1,
+    "team_ct": {
+      "score": 0,
+      "consecutive_round_losses": 1,
+      "timeouts_remaining": 1,
+      "matches_won_this_series": 0
+    },
+    "team_t": {
+      "score": 1,
+      "consecutive_round_losses": 0,
+      "timeouts_remaining": 1,
+      "matches_won_this_series": 0
+    },
+    "num_matches_to_win_series": 0
+  },
+  "round": {
+    "phase": "live"
+  },
+  "player": {
+    "steamid": "76561198000000001",
+    "name": "Tester",
+    "observer_slot": 5,
+    "team": "T",
+    "activity": "menu",
+    "state": {
+      "health": 0,
+      "armor": 0,
+      "helmet": false,
+      "flashed": 0,
+      "smoked": 0,
+      "burning": 0,
+      "money": 1350,
+      "round_kills": 1,
+      "round_killhs": 0,
+      "equip_value": 4100
+    },
+    "weapons": {},
+    "match_stats": {
+      "kills": 5,
+      "assists": 1,
+      "deaths": 1,
+      "mvps": 1,
+      "score": 12
+    }
+  },
+  "previously": {
+    "player": {
+      "activity": "playing"
+    }
+  }
+}

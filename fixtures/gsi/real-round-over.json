@@ -1,0 +1,117 @@
+{
+  "provider": {
+    "name": "Counter-Strike: Global Offensive",
+    "appid": 730,
+    "version": 14197,
+    "steamid": "76561198000000001",
+    "timestamp": 1794604874
+  },
+  "map": {
+    "mode": "casual",
+    "name": "de_inferno",
+    "phase": "live",
+    "round": 1,
+    "team_ct": {
+      "score": 0,
+      "consecutive_round_losses": 1,
+      "timeouts_remaining": 1,
+      "matches_won_this_series": 0
+    },
+    "team_t": {
+      "score": 1,
+      "consecutive_round_losses": 0,
+      "timeouts_remaining": 1,
+      "matches_won_this_series": 0
+    },
+    "num_matches_to_win_series": 0
+  },
+  "round": {
+    "phase": "over",
+    "win_team": "T"
+  },
+  "player": {
+    "steamid": "76561198000000001",
+    "name": "Tester",
+    "observer_slot": 5,
+    "team": "T",
+    "activity": "playing",
+    "state": {
+      "health": 100,
+      "armor": 100,
+      "helmet": true,
+      "flashed": 0,
+      "smoked": 0,
+      "burning": 0,
+      "money": 4100,
+      "round_kills": 4,
+      "round_killhs": 2,
+      "equip_value": 1400
+    },
+    "weapons": {
+      "weapon_0": {
+        "name": "weapon_knife_t",
+        "paintkit": "default",
+        "type": "Knife",
+        "state": "holstered"
+      },
+      "weapon_1": {
+        "name": "weapon_glock",
+        "paintkit": "glock_brick_mondrian",
+        "type": "Pistol",
+        "ammo_clip": 3,
+        "ammo_clip_max": 20,
+        "ammo_reserve": 2,
+        "state": "holstered"
+      },
+      "weapon_2": {
+        "name": "weapon_flashbang",
+        "paintkit": "default",
+        "type": "Grenade",
+        "ammo_reserve": 1,
+        "state": "active"
+      },
+      "weapon_3": {
+        "name": "weapon_c4",
+        "paintkit": "default",
+        "type": "C4",
+        "state": "holstered"
+      }
+    },
+    "match_stats": {
+      "kills": 4,
+      "assists": 1,
+      "deaths": 0,
+      "mvps": 1,
+      "score": 10
+    }
+  },
+  "previously": {
+    "map": {
+      "round": 0,
+      "team_ct": {
+        "consecutive_round_losses": 0
+      },
+      "team_t": {
+        "score": 0
+      }
+    },
+    "round": {
+      "phase": "live"
+    },
+    "player": {
+      "state": {
+        "money": 1400
+      },
+      "match_stats": {
+        "assists": 0,
+        "mvps": 0,
+        "score": 8
+      }
+    }
+  },
+  "added": {
+    "round": {
+      "win_team": true
+    }
+  }
+}
