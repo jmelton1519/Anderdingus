@@ -141,6 +141,12 @@ describe('console relay config', () => {
     ).toThrow(/DISCORD_TOKEN/);
   });
 
+  it('allows the channel ID alone, relay off', () => {
+    expect(() =>
+      loadConfig({ ...discord, DISCORD_CONSOLE_CHANNEL_ID: '123' }),
+    ).not.toThrow();
+  });
+
   it('rejects an invalid filter regex', () => {
     expect(() => loadConfig({ ...discord, CONSOLE_FILTER: '(' })).toThrow(
       /CONSOLE_FILTER/,

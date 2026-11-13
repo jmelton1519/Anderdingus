@@ -47,10 +47,10 @@ const schema = z
         }
       }
     }
-    // The console relay needs both its values and a working Discord bot.
-    const relay = ['CS2_CONSOLE_LOG', 'DISCORD_CONSOLE_CHANNEL_ID'] as const;
-    if (relay.some((k) => c[k] !== undefined)) {
-      for (const k of [...relay, ...keys]) {
+    // Setting the log path turns the relay on; it then needs the channel and the bot.
+    // The channel ID alone is allowed, so it can be kept in .env before CS2 is set up.
+    if (c.CS2_CONSOLE_LOG !== undefined) {
+      for (const k of ['DISCORD_CONSOLE_CHANNEL_ID', ...keys] as const) {
         if (c[k] === undefined) {
           ctx.addIssue({
             code: 'custom',
