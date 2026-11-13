@@ -24,7 +24,7 @@ A Discord bot (an AI agent) that reduces players' cognitive load and gives them 
 ## Environment
 - Owner machine: Windows 11, PowerShell. Project is on the E: drive.
 - Repo: https://github.com/jmelton1519/Anderdingus (branch `main`).
-- Local clone: `E:\Documents\.claude\repos\Anderdingus`
+- Local clone: `E:\Documents\Dev\repos\Anderdingus`
 - Installed or to install: Git, Node.js LTS, GitHub CLI (`gh`). Verify with `git --version`, `node --version`, `gh auth status`.
 
 ## Roadmap (we are here: phase 3)
