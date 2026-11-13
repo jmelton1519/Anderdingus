@@ -1,7 +1,8 @@
 import { z } from 'zod';
 
 const schema = z.object({
-  DISCORD_TOKEN: z.string().min(1),
+  // Not needed until the Discord wrapper exists.
+  DISCORD_TOKEN: z.string().min(1).optional(),
   GSI_PORT: z.coerce.number().int().min(1024).max(65535).default(3000),
   GSI_AUTH_TOKEN: z.string().min(8),
   LOG_LEVEL: z

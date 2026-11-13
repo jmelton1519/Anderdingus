@@ -1,0 +1,26 @@
+import { loadConfig } from './config.js';
+import { createGsiServer } from './gsi/server.js';
+import { createLogger } from './observability/logger.js';
+import { installProcessHandlers } from './observability/errors.js';
+import { StateStore } from './state/store.js';
+
+try {
+  process.loadEnvFile();
+} catch {
+  // No .env file: fall back to real environment variables.
+}
+
+const config = loadConfig();
+const logger = createLogger({ level: config.LOG_LEVEL });
+installProcessHandlers(logger);
+
+const server = createGsiServer({
+  authToken: config.GSI_AUTH_TOKEN,
+  store: new StateStore(),
+  logger,
+});
+
+// Localhost only: the receiver and the manual query endpoints are not exposed to the network.
+server.listen(config.GSI_PORT, '127.0.0.1', () => {
+  logger.info({ port: config.GSI_PORT }, 'GSI receiver listening on 127.0.0.1');
+});
