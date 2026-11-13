@@ -27,7 +27,7 @@ A Discord bot (an AI agent) that reduces players' cognitive load and gives them 
 - Local clone: `E:\Documents\Dev\repos\Anderdingus`
 - Installed or to install: Git, Node.js LTS, GitHub CLI (`gh`). Verify with `git --version`, `node --version`, `gh auth status`.
 
-## Roadmap (we are here: phase 3)
+## Roadmap (we are here: phase 5)
 1. Idea to spec (done: product brief below)
 2. Architecture decisions (mostly done; record each as an ADR in `docs/decisions/`)
 3. **Repo and GitHub setup:** README, .gitignore, .editorconfig, branch strategy, branch protection, issue/PR templates, labels, project board
@@ -48,3 +48,4 @@ A Discord bot (an AI agent) that reduces players' cognitive load and gives them 
 - Specs before code: each task has a short written requirement in an issue or `docs/`.
 - Tests for every behavior; use recorded GSI payloads as fixtures.
 - Secrets only in environment variables.
+- Harness (`.claude/`): `/spec`, `/adr`, `/pr` commands; `reviewer` subagent (read-only, run before merging); `settings.json` allows read-only git/gh and quality-gate commands and denies `.env` access, force-push, hard reset and `rm -rf`. No hooks yet: add them in phase 5 once lint/test scripts exist.
